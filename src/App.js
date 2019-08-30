@@ -1,41 +1,79 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
-import { typography } from '@material-ui/system';
-import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import Checkbox from '@material-ui/core/Checkbox';
-import IconButton from '@material-ui/core/IconButton';
-import DeleteIcon from '@material-ui/icons/Delete';
+import TodoForm from "./TodoForm";
+import TodoList from "./TodoList";
 
 
-const App = () => {
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      value: "",
+      todos: []
+    };
+  }
+  updateValue = e => {
+    this.setState({
+      value: e.target.value
+    });
+  };
 
-  return (
-    <React.Fragment>
-      <Typography variant="h2" align="center" gutterBottom>
-        To-Do List
-    </Typography>
-      <Grid container justify="center">
-        <Grid item>
-          <TextField type="text" placeholder="Add todo..." margin="normal"> </TextField>
+  saveTodo = () => {
+    if (this.state.value) {
+      this.setState({
+        todos: [
+          ...this.state.todos,
+          {
+          value:this.state.value,
+          completed: false,
+        }
+        ],
+        value: ""
+      });
+    }
+    console.log(this.state);
+  };
+
+    
+
+  deleteTodo = (index) => {
+    this.setState({
+      todos: this.state.todos.filter((_, i) => index !== i)
+    });
+  };
+
+  toggleCompleted = index => {
+    const todos =[...this.state.todos];
+    todos[index].completed = !todos[index].completed;
+    this.setState({ todos });
+  };
+
+  //const App = () => {
+  render() {
+    return (
+      <React.Fragment>
+        <Typography variant="h2" align="center" gutterBottom>
+          To-Do List
+          </Typography>
+        <Grid container justify="center">
+          <Grid item>
+            <TodoForm
+              saveTodo={this.saveTodo}
+              updateValue={this.updateValue}
+              value={this.state.value} />
+          </Grid>
         </Grid>
-      </Grid>
-      <Grid container justify="center">
-        <Grid item md={8}>
-          <ListItem button>
-            <Checkbox />
-            <ListItemText primary="Check the prework" />
-            <ListItemSecondaryAction />
-            <DeleteIcon />
-          </ListItem>
+        <Grid container justify="center">
+          <Grid item md={8}>
+            <TodoList
+              todos={this.state.todos}
+              deleteTodo={this.deleteTodo}
+              toggleCompleted={this.toggleCompleted} />
+          </Grid>
         </Grid>
-      </Grid>
-    </React.Fragment>
-  );
+      </React.Fragment>
+    );
+  }
 }
-
 export default App;
